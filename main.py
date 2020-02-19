@@ -11,7 +11,9 @@ fixed_volume_path = r"C:\LocalZ\Data\Human\US-CCF\US-CCF-064\plan\2018-08-14-150
 params_path = r"Parameters.Par0008.affine.txt"
 # params_path = r"Parameters.Par0008.elastic.txt"
 
-output_path = r"C:\test_output\new_vol.hdf5"
+output_folder = r"C:\test_output\\"
+
+output_path = r"{}\new_vol.hdf5".format(output_folder)
 
 
 sitk_fixed_image = sitk.GetImageFromArray(read_volume(fixed_volume_path))
@@ -33,6 +35,7 @@ elastixImageFilter.SetParameterMap(sitk.ReadParameterFile(params_path))
 
 # Perform registration
 elastixImageFilter.LogToConsoleOn()
+elastixImageFilter.SetOutputDirectory(output_folder)
 elastixImageFilter.Execute()
 
 # Write result image
