@@ -4,7 +4,7 @@
 
 (ErodeMask "false")
 
-(ImageSampler "Grid")
+(ImageSampler "RandomCoordinate")
 
 //ImageTypes
 (FixedInternalImagePixelType "short")
@@ -31,13 +31,13 @@
 
 (AutomaticScalesEstimation "true")
 
-(NumberOfResolutions 1)
+(NumberOfResolutions 16)
 
 //Maximum number of iterations in each resolution level:
-(MaximumNumberOfIterations 1)
+(MaximumNumberOfIterations 500)
 
 //Number of grey level bins in each resolution level:
-(NumberOfHistogramBins 8)
+(NumberOfHistogramBins 32)
 
 (NewSamplesEveryIteration "true")
 (UseAllPixels "false")
@@ -45,7 +45,7 @@
 (WriteTransformParametersEachIteration "false")
 
 //Number of spatial samples used to compute the mutual information in each resolution level:
-(NumberOfSpatialSamples 5000)
+(NumberOfSpatialSamples 1000)
 
 (MaximumNumberOfSamplingAttempts 10)
 

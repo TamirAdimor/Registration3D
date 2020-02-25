@@ -9,8 +9,13 @@ def copy_and_add_volume(orig_volume_path, dest_volume_path, volume):
             for key in orig_dset.attrs.keys():
                 dset.attrs[key] = orig_dset.attrs[key]
 
+    print('{} file saved'.format(dest_volume_path))
+
 
 def read_volume(volume_path):
     with h5py.File(volume_path, 'r') as f:
         dset = f['volume']
-        return dset[()]
+        volume = dset[()]
+        if volume.max() > 100:
+            volume = volume.astype('float32') / 1000
+        return volume
