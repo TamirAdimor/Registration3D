@@ -27,13 +27,19 @@ def cut_volume(volume, d):
 
 
 def show_volumes_slice_by_depth(dict_volumes_by_windows, depth):
+    index = 0
     for name, vol in dict_volumes_by_windows.items():
-        show_volume_slice_by_depth(vol, 'Slice of {}'.format(name), depth)
+        show_volume_slice_by_depth(vol, 'Slice of {}'.format(name), depth, index)
+        index += 1
 
 
-def show_volume_slice_by_depth(volume, name, depth):
+def show_volume_slice_by_depth(volume, name, depth, index):
     cv2.namedWindow(name, cv2.WINDOW_NORMAL)
+    cv2.resizeWindow(name, 600, 600)
+    cv2.moveWindow(name, index * 650, 100)
     volume_slice = apical_slice_from_volume(volume, depth)
+    volume_slice = volume_slice + (-1 * volume_slice.min())
+    volume_slice = volume_slice / volume_slice.max()
     cv2.imshow(name, volume_slice)
 
 
