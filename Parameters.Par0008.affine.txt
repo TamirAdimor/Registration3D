@@ -4,7 +4,7 @@
 
 (ErodeMask "false")
 
-(ImageSampler "RandomCoordinate")
+(ImageSampler "Random")
 
 //ImageTypes
 (FixedInternalImagePixelType "short")
@@ -21,7 +21,7 @@
 (Optimizer "StandardGradientDescent")
 (ResampleInterpolator "FinalBSplineInterpolator")
 (Resampler "DefaultResampler")
-(Transform "AffineTransform")
+(Transform "EulerTransform")
 
 //Order of B-Spline interpolation used in each resolution level:
 (BSplineInterpolationOrder 1)
@@ -31,7 +31,7 @@
 
 (AutomaticScalesEstimation "true")
 
-(NumberOfResolutions 16)
+(NumberOfResolutions 4)
 
 //Maximum number of iterations in each resolution level:
 (MaximumNumberOfIterations 500)
@@ -45,14 +45,14 @@
 (WriteTransformParametersEachIteration "false")
 
 //Number of spatial samples used to compute the mutual information in each resolution level:
-(NumberOfSpatialSamples 1000)
+(NumberOfSpatialSamples 10000)
 
 (MaximumNumberOfSamplingAttempts 10)
 
 //Default pixel value for pixels that come from outside the picture:
 (DefaultPixelValue 0)
 
-(ImagePyramidSchedule 8.0 4.0 4.0 2.0 1.0)
+(ImagePyramidSchedule 8.0 4.0 4.0 1.0 1.0 1.0)
 
 //SP: Param_a in each resolution level. a_k = a/(A+k+1)^alpha
 (SP_a 500.0)

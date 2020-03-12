@@ -3,20 +3,24 @@ from collections import OrderedDict
 import SimpleITK as sitk
 from matplotlib import pyplot as plt
 from scipy import ndimage
+import numpy as np
 
-from slicer import run_slicer_functionality
+from slicer import Slicer
 from volume_file_handlers import copy_and_add_volume, read_volume
 
 
 def move_moving_image_to_fixed(numpy_moving_image, numpy_fixed_image, params_path, log_folder):
     sitk_fixed_image = sitk.GetImageFromArray(numpy_fixed_image)
     sitk_moving_image = sitk.GetImageFromArray(numpy_moving_image)
+    # sitk_moving_mask = sitk.GetImageFromArray(moving_mask)
+    # sitk_fixed_mask = sitk.GetImageFromArray(numpy_moving_image)
 
     elastix_image_filter = sitk.SimpleElastix()
 
     # Read Input
     elastix_image_filter.SetFixedImage(sitk_fixed_image)
     elastix_image_filter.SetMovingImage(sitk_moving_image)
+    # elastix_image_filter.SetMovingMask(sitk_moving_mask)
 
     # elastix_image_filter.SetParameterMap(elastix_image_filter.GetDefaultParameterMap('rigid'))  # nonrigid
     elastix_image_filter.SetParameterMap(sitk.ReadParameterFile(params_path))
@@ -47,19 +51,23 @@ def register(fixed_volume_path, moving_volume_path, output_folder, params_path):
     # exit()
 
     # rotated_moving_image = rotate_and_save(moving_image)
+    # unrotated = moving_image.copy()
+    moving_image = transform_moving_image(moving_image)
+
+    moving_image, fixed_image = crop_volumes(moving_image, fixed_image)
 
     res_image_array = move_moving_image_to_fixed(moving_image, fixed_image, params_path, output_folder)
 
     copy_and_add_volume(fixed_volume_path, output_image_path, res_image_array)
 
     all_slicer_images = OrderedDict([
-        # 'moving': moving_image,
+        # ('moving', unrotated),
         ('moving_rotated', moving_image),
         ('moving_result', res_image_array),
         ('fixed', fixed_image)
     ])
 
-    run_slicer_functionality(all_slicer_images, int(fixed_image.shape[1] / 2))
+    Slicer(all_slicer_images, int(fixed_image.shape[1] / 2)).show()
 
 
 def rotate_and_save(moving_image):
@@ -74,8 +82,28 @@ def rotate_and_save(moving_image):
     return moving_image_rotated
 
 
+def create_mask(moving_image, fixed_image):
+    moving_mask = np.zeros(moving_image.shape, dtype="uint8")
+    moving_mask[50:150, 100:200, 50:130] = 1
+    return moving_mask
+
+
+def crop_volumes(moving_image, fixed_image):
+
+    # y, depth, x
+    fixed_image = fixed_image[30:170, 20:280, 50:130]
+    # 106
+    # moving_image = moving_image[80:170, 150:300, 70:140]
+    # 110
+    # moving_image = moving_image[80:170, 150:300, 70:140]
+    # UCH US-ECH-2018-11-20-LO
+    moving_image = moving_image[100:200, 70:250, 60:150]
+
+    return moving_image, fixed_image
+
+
 def transform_moving_image(image):
-    image = ndimage.shift(image, [-50, 0, 0])
+    # image = ndimage.shift(image, [-10, 0, 0])
     image = ndimage.rotate(image, 5, axes=(2, 0))
     image = ndimage.rotate(image, 10, axes=(1, 0))
     return image
@@ -133,8 +161,8 @@ def main():
     # fixed_volume_path = r"{}\simulation.hdf5".format(data_folder)
     # # fixed_volume_path = r"{}\064---512x512x512.hdf5".format(data_folder)
 
-    fixed_volume_path = r"{}\064---512x512x512.hdf5".format(data_folder)
-    moving_volume_path = r"{}\064---transformed.hdf5".format(data_folder)
+    fixed_volume_path = r"{}\ECH_0_0.hdf5".format(data_folder)
+    moving_volume_path = r"{}\ECH_0_1.hdf5".format(data_folder)
     # fixed_volume_path = r"{}\067---tomo.hdf5".format(data_folder)
     # moving_volume_path = r"{}\067_as_tomo.hdf5".format(data_folder)
     # fixed_volume_path = r"{}\ccf-085\segmented_volume.hdf5".format(data_folder)
